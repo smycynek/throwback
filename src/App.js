@@ -1,5 +1,9 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/jsx-filename-extension */
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
+import { useFormik } from 'formik';
+
 import 'bootstrap/dist/css/bootstrap.css';
 import {
   BrowserRouter as Router,
@@ -7,6 +11,34 @@ import {
   Route,
   Link,
 } from 'react-router-dom';
+
+const SignupForm = () => {
+  // Pass the useFormik() hook initial form values and a submit function that will
+  // be called when the form is submitted
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+    },
+    onSubmit: (values) => {
+      alert(JSON.stringify(values, null, 2));
+    },
+  });
+  return (
+    <form onSubmit={formik.handleSubmit}>
+      <label htmlFor="email">Email Address</label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        onChange={formik.handleChange}
+        value={formik.values.email}
+      />
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
+
+const FormikPage = () => (<SignupForm />);
 
 const About = () => (
   <>
@@ -29,7 +61,7 @@ const Contact = () => (
   </>
 );
 
-const AForm = ({ submit }) => {
+const AControlledForm = ({ submit }) => {
   const [letter, setLetter] = useState(null);
   const updateForm = (e) => {
     setLetter(e.target.value);
@@ -59,7 +91,7 @@ const Interactive = () => {
 
   return (
     <>
-      <AForm submit={Submit} />
+      <AControlledForm submit={Submit} />
       <p>You selected:</p>
       <div>
         {selectedLetter}
@@ -68,6 +100,46 @@ const Interactive = () => {
   );
 };
 
+const UncontrolledForm = ({ submitHelper }) => {
+  const input = React.createRef();
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    submitHelper(input.current.value);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        Some Value:
+        <input type="text" ref={input} />
+      </label>
+      <input type="submit" value="Submit" />
+    </form>
+  );
+};
+
+const UncontrolledPageWrapper = ({ children }) => (ReactDOM.createPortal(
+  children,
+  document.getElementById('alt'),
+));
+const UncontrolledPage = () => {
+  const [UValue, setUValue] = useState(null);
+
+  const submitExtractor = (value) => {
+    setUValue(value);
+  };
+
+  return (
+    <>
+      <h1>Uncontrolled</h1>
+      <div>
+        Extracted form value:
+        {UValue}
+      </div>
+      <UncontrolledForm submitHelper={submitExtractor} />
+    </>
+  );
+};
 function App() {
   return (
     <div>
@@ -88,7 +160,13 @@ function App() {
                   <Link to="/contact">Contact</Link>
                 </li>
                 <li>
-                  <Link to="/interactive">A form</Link>
+                  <Link to="/interactive">A controlled form</Link>
+                </li>
+                <li>
+                  <Link to="/formik">A formik form</Link>
+                </li>
+                <li>
+                  <Link to="/uncontrolled">An uncontrolled form</Link>
                 </li>
               </ul>
             </div>
@@ -107,6 +185,14 @@ function App() {
                 </Route>
                 <Route path="/interactive">
                   <Interactive />
+                </Route>
+                <Route path="/formik">
+                  <FormikPage />
+                </Route>
+                <Route path="/uncontrolled">
+                  <UncontrolledPageWrapper>
+                    <UncontrolledPage />
+                  </UncontrolledPageWrapper>
                 </Route>
               </Switch>
             </div>
