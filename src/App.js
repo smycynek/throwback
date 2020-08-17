@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-filename-extension */
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import { useFormik } from 'formik';
+import { useFormik, Form, Field } from 'formik';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import {
@@ -33,6 +33,28 @@ const SignupForm = () => {
         onChange={formik.handleChange}
         value={formik.values.email}
       />
+      <br />
+      <label htmlFor="number">Number</label>
+      <input
+        id="number"
+        name="number"
+        type="number"
+        onChange={formik.handleChange}
+        value={formik.values.number}
+      />
+      <br />
+      <label htmlFor="letter">Letter</label>
+      <select
+        id="letter"
+        name="letter"
+        onChange={formik.handleChange}
+        value={formik.values.letter}
+        multiple
+      >
+        <option>A</option>
+        <option>B</option>
+      </select>
+      <br />
       <button type="submit">Submit</button>
     </form>
   );
